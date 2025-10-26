@@ -1,6 +1,7 @@
 import os
 import asyncio
 import threading
+import aiohttp
 from flask import Flask, request
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
