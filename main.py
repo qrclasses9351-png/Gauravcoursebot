@@ -38,6 +38,12 @@ async def start(message):
     )
 
 
+@bot.on_message(filters.command("stop"))
+async def restart_handler(_, m):
+    await m.reply_text("**Stopped**🚦", True)
+    os.execl(sys.executable, sys.executable, *sys.argv)
+
+
 @bot.message_handler(content_types=["document"])
 async def handle_textfile(message):
     file_info = await bot.get_file(message.document.file_id)
