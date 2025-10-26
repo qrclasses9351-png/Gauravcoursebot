@@ -53,12 +53,17 @@ async def handle_textfile(message):
 async def handle_single_link(message):
     await download_and_send(bot, message.chat.id, message.text.strip(), 1)
 
+import re
+
 async def download_and_send(bot, chat_id, url, count):
     try:
         filename = url.split("/")[-1]
         if not any(ext in filename for ext in [".mp4", ".pdf", ".ws"]):
             filename += ".bin"
-        save_path = os.path.join(DOWNLOAD_DIR, f"{count:03d}_{filename}")
+
+        # ✅ Unsafe characters हटाओ
+        safe_name = re.sub(r'[^a-zA-Z0-9._-]', '_', filename)
+        save_path = os.path.join(DOWNLOAD_DIR, f"{count:03d}_{safe_name}")
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
@@ -68,6 +73,7 @@ async def download_and_send(bot, chat_id, url, count):
                 async with aiofiles.open(save_path, "wb") as f:
                     await f.write(await resp.read())
 
+        # ✅ अब भेजो
         if save_path.endswith(".pdf"):
             await bot.send_document(chat_id, open(save_path, "rb"), caption=f"📘 PDF {count}")
         elif save_path.endswith(".mp4"):
@@ -76,7 +82,8 @@ async def download_and_send(bot, chat_id, url, count):
             await bot.send_document(chat_id, open(save_path, "rb"), caption=f"📁 File {count}")
 
     except Exception as e:
-        await bot.send_message(chat_id, f"❌ Downloading Interrupted\nError: {e}")
+        await bot.send_message(chat_id, f"❌ Downloading Interrupted\\nError: {e}")
+
 
 async def main():
     print("🤖 Bot is running...")
