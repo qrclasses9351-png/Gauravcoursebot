@@ -106,7 +106,7 @@ async def handle_text_file(message):
 
     for i, url in enumerate(links, start=1):
         await download_from_url(user_id, chat_id, url, count=i)
-        await asyncio.sleep(2)  # avoid timeout
+        await asyncio.sleep(4)  # avoid timeout
 
 @bot.message_handler(func=lambda m: m.text and 'https://' in m.text)
 async def handle_link(message):
