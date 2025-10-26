@@ -1,10 +1,11 @@
-from telebot import types
+import os
 import asyncio
-import aiohttp, aiofiles
-from telebot.async_telebot import AsyncTeleBot
+import threading
 from flask import Flask, request
-from urllib.parse import unquote
-import re, os, threading
+from telebot.async_telebot import AsyncTeleBot
+from telebot import types
+from telebot.asyncio_helper import ApiHelper  # ✅ यह लाइन जोड़ना जरूरी है
+
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY")
 ApiHelper.RETRY_TIMEOUT = 20
