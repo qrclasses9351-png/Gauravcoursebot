@@ -3,6 +3,7 @@ import re                     # ✅ regex module (fixes your current error)
 import aiohttp
 import asyncio
 import threading
+download_flags = {}  # user_id → bool (True = stop download)
 from flask import Flask, request
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types, apihelper
