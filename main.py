@@ -8,6 +8,7 @@ import re, os, threading
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY")
 bot = AsyncTeleBot(BOT_TOKEN)
+bot = AsyncTeleBot(BOT_TOKEN, request_timeout=20)
 
 app = Flask(__name__)
 DOWNLOAD_DIR = "downloads"
@@ -76,11 +77,12 @@ def index():
 def webhook():
     update = request.get_json(force=True)
     if update:
-        # ✅ Correct way: use telebot.types instead of bot.types
         telegram_update = types.Update.de_json(update)
-        asyncio.run(bot.process_new_updates([telegram_update]))
+        # ✅ Use background thread to avoid blocking Flask
+        threading.Thread(
+            target=lambda: asyncio.run(bot.process_new_updates([telegram_update]))
+        ).start()
     return "ok"
-
 
 def run_flask():
     port = int(os.environ.get("PORT", 5000))
