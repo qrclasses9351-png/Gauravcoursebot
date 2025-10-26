@@ -118,11 +118,19 @@ def webhook():
     update = request.get_json(force=True)
     if update:
         telegram_update = types.Update.de_json(update)
-        loop = asyncio.get_event_loop()
+
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            # अगर loop नहीं है, नया बनाओ
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
         if loop.is_running():
             asyncio.ensure_future(bot.process_new_updates([telegram_update]))
         else:
             loop.run_until_complete(bot.process_new_updates([telegram_update]))
+
     return "ok"
 
 # ===========================
