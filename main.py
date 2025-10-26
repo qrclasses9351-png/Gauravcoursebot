@@ -113,19 +113,17 @@ async def download_and_send(bot, chat_id, raw_text, count):
 # ===========================
 # 🔹 Flask Webhook Routes
 # ===========================
-@app.route("/")
-def index():
-    return "🤖 Utkarsh Downloader Bot running via Webhook!"
-
-
 @app.route("/webhook", methods=["POST"])
 def webhook():
     update = request.get_json(force=True)
     if update:
         telegram_update = types.Update.de_json(update)
-        asyncio.run(bot.process_new_updates([telegram_update]))
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            asyncio.ensure_future(bot.process_new_updates([telegram_update]))
+        else:
+            loop.run_until_complete(bot.process_new_updates([telegram_update]))
     return "ok"
-
 
 # ===========================
 # 🔹 Start Flask + Webhook
