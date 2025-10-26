@@ -2,3 +2,5 @@ pyTelegramBotAPI
 aiohttp
 aiofiles
 flask
+gunicorn
+gevent
