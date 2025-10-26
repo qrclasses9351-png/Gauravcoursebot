@@ -54,26 +54,32 @@ async def handle_single_link(message):
     await download_and_send(bot, message.chat.id, message.text.strip(), 1)
 
 import re
+from urllib.parse import unquote
 
 async def download_and_send(bot, chat_id, url, count):
     try:
+        # 🔹 पहले URL decode करो
+        url = unquote(url.strip())
+
+        # 🔹 नाम साफ करो
         filename = url.split("/")[-1]
         if not any(ext in filename for ext in [".mp4", ".pdf", ".ws"]):
             filename += ".bin"
 
-        # ✅ Unsafe characters हटाओ
         safe_name = re.sub(r'[^a-zA-Z0-9._-]', '_', filename)
         save_path = os.path.join(DOWNLOAD_DIR, f"{count:03d}_{safe_name}")
 
+        # 🔹 डाउनलोड शुरू
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 if resp.status != 200:
                     await bot.send_message(chat_id, f"⚠️ Download failed ({resp.status}): {url}")
                     return
+
                 async with aiofiles.open(save_path, "wb") as f:
                     await f.write(await resp.read())
 
-        # ✅ अब भेजो
+        # 🔹 Telegram पर भेजो
         if save_path.endswith(".pdf"):
             await bot.send_document(chat_id, open(save_path, "rb"), caption=f"📘 PDF {count}")
         elif save_path.endswith(".mp4"):
@@ -83,6 +89,7 @@ async def download_and_send(bot, chat_id, url, count):
 
     except Exception as e:
         await bot.send_message(chat_id, f"❌ Downloading Interrupted\\nError: {e}")
+
 
 
 async def main():
