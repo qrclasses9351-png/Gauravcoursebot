@@ -4,11 +4,10 @@ import threading
 from flask import Flask, request
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
-from telebot.asyncio_helper import ApiHelper  # ✅ यह लाइन जोड़ना जरूरी है
-
+from telebot import apihelper
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY")
-ApiHelper.RETRY_TIMEOUT = 20
+apihelper.RETRY_TIMEOUT = 20
 
 bot = AsyncTeleBot(BOT_TOKEN)
 app = Flask(__name__)
