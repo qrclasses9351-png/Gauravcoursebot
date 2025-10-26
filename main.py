@@ -6,7 +6,7 @@ from flask import Flask
 import os
 import threading
 
-BOT_TOKEN = "YOUR_BOT_TOKEN"
+BOT_TOKEN = "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY"
 bot = AsyncTeleBot(BOT_TOKEN)
 
 DOWNLOAD_DIR = "downloads"
