@@ -27,6 +27,12 @@ async def start(message):
     )
 
 @bot.message_handler(content_types=["document"])
+
+@bot.message_handler(commands=['stop'])
+async def stop_download(message):
+    download_flags[message.from_user.id] = True
+    await bot.send_message(message.chat.id, "🛑 Download stopped!")
+    
 async def handle_textfile(message):
     file_info = await bot.get_file(message.document.file_id)
     file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_info.file_path}"
