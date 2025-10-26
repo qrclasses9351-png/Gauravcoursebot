@@ -9,7 +9,7 @@ import re, os, threading
 # ===========================
 # 🔧 BOT CONFIG
 # ===========================
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 bot = AsyncTeleBot(BOT_TOKEN)
 
 app = Flask(__name__)
@@ -70,6 +70,11 @@ async def download_and_send(bot, chat_id, raw_text, count):
             await bot.send_message(chat_id, f"⚠️ कोई वैध लिंक नहीं मिला:\n{raw_text}")
             return
 
+        # Skip private Utkarsh links
+        if "apps-s3-prod.utkarshapp.com" in url:
+            await bot.send_message(chat_id, f"🔒 Locked file (private Utkarsh link):\n{url}")
+            return
+
         # Decode + re-encode URL safely
         url = unquote(url.strip())
         parsed = urlparse(url)
@@ -110,7 +115,7 @@ async def download_and_send(bot, chat_id, raw_text, count):
 # ===========================
 @app.route("/")
 def index():
-    return "🤖 GAURAV Utkarsh Downloader Bot running via Webhook!"
+    return "🤖 Utkarsh Downloader Bot running via Webhook!"
 
 
 @app.route("/webhook", methods=["POST"])
