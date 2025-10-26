@@ -16,6 +16,8 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 # set a slightly larger timeout for outgoing Telegram API requests
 apihelper.RETRY_TIMEOUT = 20
+apihelper.SESSION_TIMEOUT = 60
+apihelper.RETRY_TIMEOUT = 60
 
 bot = AsyncTeleBot(BOT_TOKEN)
 app = Flask(__name__)
@@ -127,7 +129,7 @@ async def handle_text_file(message):
     for i, url in enumerate(links, start=1):
         await download_from_url(user_id, chat_id, url, count=i)
         # small pause to avoid hitting rate limits
-        await asyncio.sleep(0.8)
+        await asyncio.sleep(2)
 
 @bot.message_handler(func=lambda m: 'https://' in m.text)
 async def handle_single_link(message):
