@@ -7,8 +7,10 @@ from urllib.parse import unquote
 import re, os, threading
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY")
+ApiHelper.RETRY_TIMEOUT = 20
+
 bot = AsyncTeleBot(BOT_TOKEN)
-bot = AsyncTeleBot(BOT_TOKEN, request_timeout=20)
+app = Flask(__name__)
 
 app = Flask(__name__)
 DOWNLOAD_DIR = "downloads"
