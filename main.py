@@ -1,3 +1,4 @@
+from telebot import types
 import asyncio
 import aiohttp, aiofiles
 from telebot.async_telebot import AsyncTeleBot
@@ -74,8 +75,12 @@ def index():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     update = request.get_json(force=True)
-    asyncio.run(bot.process_new_updates([bot.types.Update.de_json(update)]))
+    if update:
+        # ✅ Correct way: use telebot.types instead of bot.types
+        telegram_update = types.Update.de_json(update)
+        asyncio.run(bot.process_new_updates([telegram_update]))
     return "ok"
+
 
 def run_flask():
     port = int(os.environ.get("PORT", 5000))
