@@ -1,33 +1,27 @@
-import os
-import re                     # ✅ regex module (fixes your current error)
-import aiohttp
 import asyncio
-import threading
-from flask import Flask, request
+import aiohttp, aiofiles
 from telebot.async_telebot import AsyncTeleBot
-from telebot import types, apihelper
+from flask import Flask, request
 from urllib.parse import unquote
+import re, os, threading
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY")
-apihelper.RETRY_TIMEOUT = 20
-
 bot = AsyncTeleBot(BOT_TOKEN)
-app = Flask(__name__)
 
 app = Flask(__name__)
 DOWNLOAD_DIR = "downloads"
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
+# ---------- Telegram Handlers ----------
 @bot.message_handler(commands=["start"])
 async def start(message):
     await bot.send_message(
         message.chat.id,
-        "👋 नमस्ते!\nमुझे Utkarsh App का कोई PDF या Video लिंक भेजें "
+        "👋 नमस्ते! मुझे Utkarsh App का कोई PDF या Video लिंक भेजें "
         "या .txt फाइल अपलोड करें — मैं सब डाउनलोड कर दूँ 📥"
     )
 
 @bot.message_handler(content_types=["document"])
-    
 async def handle_textfile(message):
     file_info = await bot.get_file(message.document.file_id)
     file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_info.file_path}"
@@ -47,9 +41,10 @@ async def handle_textfile(message):
 async def single(message):
     await download_and_send(bot, message.chat.id, message.text.strip(), 1)
 
+# ---------- Downloader ----------
 async def download_and_send(bot, chat_id, url, count):
     try:
-        url = unquote(url.strip())
+        url = unquote(url.strip())                      # decode encoded URLs
         filename = url.split("/")[-1]
         if not any(ext in filename for ext in [".mp4", ".pdf", ".ws"]):
             filename += ".bin"
@@ -72,8 +67,9 @@ async def download_and_send(bot, chat_id, url, count):
             await bot.send_document(chat_id, open(path, "rb"), caption=f"📁 File {count}")
 
     except Exception as e:
-        await bot.send_message(chat_id, f"❌ Downloading Interrupted\nError: {e}")
+        await bot.send_message(chat_id, f"❌ Downloading Interrupted\\nError: {e}")
 
+# ---------- Webhook for Render ----------
 @app.route("/")
 def index():
     return "🤖 GAURAV Utkarsh Downloader Bot running via Webhook!"
@@ -81,12 +77,7 @@ def index():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     update = request.get_json(force=True)
-    if update:
-        telegram_update = types.Update.de_json(update)
-        # ✅ Use background thread to avoid blocking Flask
-        threading.Thread(
-            target=lambda: asyncio.run(bot.process_new_updates([telegram_update]))
-        ).start()
+    asyncio.run(bot.process_new_updates([bot.types.Update.de_json(update)]))
     return "ok"
 
 def run_flask():
