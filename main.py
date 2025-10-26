@@ -74,10 +74,14 @@ async def download_and_send(bot, chat_id, url, count):
 def index():
     return "🤖 GAURAV Utkarsh Downloader Bot running via Webhook!"
 
+from telebot import types  # ये line ऊपर पहले से होगी
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     update = request.get_json(force=True)
-    asyncio.run(bot.process_new_updates([bot.types.Update.de_json(update)]))
+    if update:
+        telegram_update = types.Update.de_json(update)
+        asyncio.run(bot.process_new_updates([telegram_update]))
     return "ok"
 
 def run_flask():
