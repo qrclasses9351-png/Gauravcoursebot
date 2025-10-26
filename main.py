@@ -9,7 +9,7 @@ import re, os, threading
 # ===========================
 # 🔧 BOT CONFIG
 # ===========================
-BOT_TOKEN = os.getenv("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "8099375497:AAEs0UZ7gMlA1j25xDZN6Gawg0HKzKOXRJY")
 bot = AsyncTeleBot(BOT_TOKEN)
 
 app = Flask(__name__)
